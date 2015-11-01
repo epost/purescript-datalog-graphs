@@ -1,0 +1,41 @@
+#+title:Datalog graphs
+
+Produce graphs:
+
+[[file:./example.png]]
+
+from Datalog knowledge bases using [[https://github.com/epost/purescript-datalog-parsers][purescript-datalog-parsers]]:
+
+#+BEGIN_SRC prolog
+% facts
+module("Test1").
+module("Zoink").
+module("Fnord").
+data("Traffic").
+newtype("Sum").
+value("f").
+data_ctor("Red", "Traffic").
+data_ctor("Green", "Traffic").
+data_ctor("Sum", "Sum").
+defined_in("Test1", "Zoink").
+defined_in("Zoink", "Fnord").
+defined_in("Traffic", "Test1").
+defined_in("Sum", "Test1").
+defined_in("f", "Test1").
+
+% rules
+defined_in_star(X, Y) :- defined_in(X, Y).
+defined_in_star(X, Y) :- defined_in(X, Z), defined_in_star(Z, Y).
+#+END_SRC
+
+Using [[https://github.com/epost/psc-query][psc-query]], these can be obtained from PureScript source code:
+
+#+BEGIN_SRC PureScript
+module Fnord.Zoink.Test1 where
+
+data Traffic = Red | Green
+
+newtype Sum a = Sum a
+
+f x = x + 1
+#+END_SRC
